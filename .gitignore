@@ -44,5 +44,5 @@ desktop.ini
 *.bak
 .cache/
 .dist
-persistent storage/
+persistent_storage/
 .agents
