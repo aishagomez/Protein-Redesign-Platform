@@ -1,1 +1,0 @@
-['G', 'Y', 'S', 'Y', 'N', 'T', 'S', 'V', 'S', 'G', 'G', 'S', 'Y', 'N', 'M', 'D', 'Y', 'L', 'N', 'R', 'T', 'S', 'Y', 'E', 'C', 'F', 'N', 'G', 'S', 'N', 'F', 'Y', 'S', 'G', 'V', 'G', 'P', 'T'] (4.709,) /persistent_storage/runs/stage_3/runtime_output/run15/g0/g0_00.pdb
