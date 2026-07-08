@@ -1,0 +1,26 @@
+Parameters for Criterion 1 (helix interface-noninterface) set#4
+
+Interface sector [deg]
+90
+
+No.of hits to analyze per helix pair
+10
+
+Alternative correct ligand's positions
+
+helix no.   X        Y        Z
+
+   7         7.2     1.1   -13.4    for helices 1-2
+   3        -4.2    -0.9   -15.2    for helices 2-1
+   1         6.7    -2.4    -3.4    for helices 2-3
+   4        -9.5     1.3   -23.1    for helices 3-2
+   2        -1.6     2.5    -6.2    for helices 3-4
+   5        -3.1     2.5   -29.9    for helices 4-3
+   3        -4.2    -0.9   -15.2    for helices 4-5
+   6         5.7     4.4   -22.4    for helices 5-4
+   4        -9.5     1.3   -23.1    for helices 5-6
+   7         7.2     1.1   -13.4    for helices 6-5
+   5        -3.1     2.5   -29.9    for helices 6-7
+   1         6.7    -2.4    -3.4    for helices 7-6
+   2        -1.6     2.5    -6.2    for helices 1-7
+   6         5.7     4.4   -22.4    for helices 7-1

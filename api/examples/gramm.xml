@@ -1,0 +1,79 @@
+<tool name="gramm" version="2025" stage="docking" active="true">
+  <description>Global RAnge Molecular Matching for protein-protein docking</description>
+  <runtime mode="docker">
+    <image>gramm:2025</image>
+    <workdir>{runtime_workdir}</workdir>
+    <command>
+      <arg>/app/gramm</arg>
+      <arg>scan</arg>
+      <arg>refine</arg>
+    </command>
+    <resources memory="8g" cpus="2" />
+    <env>
+      <var name="GRAMMDAT" value="/app/ANG" />
+      <var name="PYTHONUNBUFFERED" value="1" />
+    </env>
+  </runtime>
+  <inputs>
+    <param name="receptor_path" kind="file" format="pdb" required="false"
+           label="Receptor PDB" description="Optional receptor PDB. If omitted, docking uses the previous refinement output automatically." />
+    <param name="ligand_path" kind="file" format="pdb" required="false"
+           label="Ligand PDB" description="Optional ligand PDB. If omitted, docking uses the previous refinement output automatically." />
+    <param name="receptor_fragment" kind="string" required="false" default="*"
+           label="Receptor fragment" description="Fragment selector for receptor: *, chain id or atom range" />
+    <param name="ligand_fragment" kind="string" required="false" default="*"
+           label="Ligand fragment" description="Fragment selector for ligand: *, chain id or atom range" />
+    <param name="receptor_id" kind="string" required="false"
+           label="Receptor ID" description="Identifier used to name GRAMM output files" />
+    <param name="ligand_id" kind="string" required="false"
+           label="Ligand ID" description="Identifier used to name GRAMM output files" />
+  </inputs>
+  <options>
+    <param name="mmode" type="string" required="false" default="docking"
+           description="Matching mode for scan stage" />
+    <param name="eta" type="float" required="false" default="3.5"
+           description="Grid step for scan stage" />
+    <param name="ro" type="int" required="false" default="9"
+           description="Repulsion parameter" />
+    <param name="fr" type="float" required="false" default="0.0"
+           description="Attraction double range fraction" />
+    <param name="crang" type="string" required="false" default="grid_step"
+           description="Potential range type" />
+    <param name="ccti" type="string" required="false" default="gray"
+           description="Projection mode" />
+    <param name="crep" type="string" required="false" default="all"
+           description="Representation mode" />
+    <param name="maxm" type="int" required="false" default="30000"
+           description="Number of scan matches to output" />
+    <param name="ai" type="int" required="false" default="10"
+           description="Angular increment in degrees" />
+    <param name="mtch_l" type="int" required="false" default="20000"
+           description="Number of scan matches to input into refine" />
+    <param name="scovdw" type="int" required="false" default="0"
+           description="VDW scoring mode" />
+    <param name="scosta" type="int" required="false" default="0"
+           description="Statistical scoring mode" />
+    <param name="ctr" type="int" required="false" default="0"
+           description="Constraint mode" />
+    <param name="rclusl" type="int" required="false" default="10"
+           description="Cluster RMSD radius" />
+    <param name="mbak" type="int" required="false" default="0"
+           description="Backtrack mode" />
+    <param name="maxmch" type="int" required="false" default="100"
+           description="Maximum number of refinement matches to output" />
+    <param name="sejo" type="string" required="false" default="joint"
+           description="Output file separate or joint" />
+    <param name="constraints" type="string" required="false"
+           description="Optional raw rcon.gr content or serialized constraints payload" />
+    <param name="rusr_content" type="string" required="false"
+           description="Optional raw rusr.gr content" />
+  </options>
+  <outputs>
+    <artifact name="scan_predictions" kind="file" format="res"
+              label="Scan predictions" description="Docking scores and transformations for predicted poses" />
+    <artifact name="refined_complexes" kind="file" format="pdb"
+              label="Refined complexes" description="Final protein-protein docked complexes in PDB format" />
+    <artifact name="gramm_log" kind="file" format="log"
+              label="GRAMM log" description="Execution log produced by GRAMM" />
+  </outputs>
+</tool>

@@ -1,0 +1,9 @@
+mmode= docking
+eta= 3.5
+ro= 9
+fr= 0.0
+crang= grid_step
+ccti= gray
+crep= all
+maxm= 30000
+ai= 10

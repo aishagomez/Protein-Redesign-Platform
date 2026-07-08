@@ -1,0 +1,9 @@
+Matching mode (docking/helix/overlap) ......................... mmode= docking
+Grid step ....................................................... eta= 3.5
+Repulsion (attraction is always -1) .............................. ro= 9
+Attraction double range (fraction of single range) ............... fr= 0.0
+Potential range type (atom_radius, grid_step) ................. crang= grid_step
+Projection (blackwhite, gray) .................................. ccti= gray
+Representation (all, hydrophobic, c-alpha) ..................... crep= all
+Number of matches to output .................................... maxm= 30000
+Angle,deg(5,6,7,8,9,10,12,15,18,20,30,40,50,60,70,80,90,0-no rot.) ai= 10

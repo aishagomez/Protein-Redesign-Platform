@@ -1,0 +1,8 @@
+Number of scan matches to input .............................. mtch_l= 20000
+Scoring vdw  (0-no, 1-rglr, 2-implicit s/chains) ............. scovdw= 0
+Scoring stat (0-no, 1-GSVB, 2-MJ) ............................ scosta= 0
+Constraints  (0-no, 1-yes) ...................................    ctr= 0
+Cluster RMSD radius (0-no cluster) ........................... rclusl= 10
+Backtrack (0-no, 1-rigid, 2-flexible implicit) ...............   mbak= 0
+Number of matches to output (max no of refinement processes)   maxmch= 100
+Output file separate/joint ..................................... sejo= joint

@@ -1,0 +1,159 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: pipeline_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  broker:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./api
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./persistent_storage:/persistent_storage
+      - ./docs:/docs
+    depends_on:
+      db:
+        condition: service_started
+      broker:
+        condition: service_healthy
+      email-notifier:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/pipeline_db
+      ORCHESTRATOR_URL: http://api:8000
+      INTERNAL_TOKEN: internal-secret-change-me
+      EMAIL_NOTIFIER_URL: http://email-notifier:8010/send
+      MAX_RETRIES: "3"
+      WORKER_TIMEOUT_SECONDS: "30"
+      DOCS_PATH: /docs
+
+  refinement-worker:
+    build: ./workers/refinement-worker
+    volumes:
+      - ./persistent_storage:/persistent_storage
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      ORCHESTRATOR_URL: http://api:8000
+      INTERNAL_TOKEN: internal-secret-change-me
+      WORK_ROOT: /persistent_storage/runs
+    depends_on:
+      broker:
+        condition: service_healthy
+      api:
+        condition: service_started
+      gnnrefine-runtime:
+        condition: service_started
+      atomrefine-runtime:
+        condition: service_started
+
+  gnnrefine-runtime:
+    build: ./workers/refinement-worker/gnnrefine
+    image: gnnrefine:1.0
+    command: ["sleep", "infinity"]
+  
+  atomrefine-runtime:
+    build: ./workers/refinement-worker/atomrefine
+    image: atomrefine:1.0
+    command: ["sleep", "infinity"]
+
+  docking-worker:
+    build: ./workers/docking-worker
+    volumes:
+      - ./persistent_storage:/persistent_storage
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      ORCHESTRATOR_URL: http://api:8000
+      INTERNAL_TOKEN: internal-secret-change-me
+      WORK_ROOT: /persistent_storage/runs
+    depends_on:
+      broker:
+        condition: service_healthy
+      api:
+        condition: service_started
+      gramm-runtime:
+        condition: service_started
+
+  gramm-runtime:
+    build: ./workers/docking-worker/gramm
+    image: gramm:2025
+    command: ["sleep", "infinity"]
+
+  evolution-worker:
+    build: ./workers/evolution-worker
+    volumes:
+      - ./persistent_storage:/persistent_storage
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      ORCHESTRATOR_URL: http://api:8000
+      INTERNAL_TOKEN: internal-secret-change-me
+      WORK_ROOT: /persistent_storage/runs
+    depends_on:
+      broker:
+        condition: service_healthy
+      api:
+        condition: service_started
+      protein-ea-runtime:
+        condition: service_started
+
+  protein-ea-runtime:
+    build: ./workers/evolution-worker/protein_ea
+    image: protein-ea:1.0
+    command: ["sleep", "infinity"]
+
+  email-notifier:
+    build: ./email-notifier
+    environment:
+      INTERNAL_TOKEN: internal-secret-change-me
+      SMTP_HOST: "smtp.gmail.com"
+      SMTP_PORT: "587"
+      SMTP_USER: "aishaggch13@gmail.com"
+      SMTP_PASSWORD: "jtxm kxqi loby ause"
+      SMTP_FROM: "aishaggch13@gmail.com"
+      SMTP_USE_TLS: "true"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - '5173:5173'
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+    depends_on:
+      api:
+        condition: service_started
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5050:80'
+    depends_on:
+      - db
+
+volumes:
+  db_data: {}
+  rabbit_data: {}

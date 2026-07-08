@@ -1,0 +1,30 @@
+{
+  "stage_name": "docking",
+  "tool_id": 2,
+  "tool": "gramm",
+  "tool_version": "2025",
+  "params": {
+    "receptor_path": "/test/receptor.pdb",
+    "ligand_path": "/test/ligando.pdb",
+    "receptor_id": "receptor",
+    "ligand_id": "ligand",
+    "receptor_fragment": "*",
+    "ligand_fragment": "*",
+    "output_dir": "/persistent_storage/outputs/testuser/docking/pipeline_1/stage_2",
+    "mmode": "docking",
+    "eta": 3.5,
+    "ro": 9,
+    "fr": 0.0,
+    "crang": "grid_step",
+    "ccti": "gray",
+    "crep": "all",
+    "maxm": 30000,
+    "ai": 10,
+    "mtch_l": 20000,
+    "scovdw": 0,
+    "scosta": 0,
+    "ctr": 0,
+    "rclusl": 10,
+    "mbak": 0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "stage_name": "refinement",
+  "tool_id": 1,
+  "tool": "gnn_refine",
+  "tool_version": "1.0",
+  "params": {
+    "input": "/test/2HHB.pdb",
+    "output_dir": "/persistent_storage/outputs/testuser/refinement/pipeline_1/stage_1",
+    "n_decoy": 1,
+    "n_proc": 1,
+    "device_id": -1,
+    "save_qa": false,
+    "save_le_decoy": false,
+    "save_all_decoy": false,
+    "only_pred_dist": false
+  }
+}

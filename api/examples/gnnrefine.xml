@@ -1,0 +1,48 @@
+<tool name="gnn_refine" version="1.0" stage="refinement" active="true">
+  <description>Protein structure refinement with GNNRefine using deep graph neural networks and PyRosetta FastRelax</description>
+  <runtime mode="docker">
+    <image>gnnrefine:1.0</image>
+    <workdir>/app/code</workdir>
+    <command> 
+      <arg>python</arg>
+      <arg>-u</arg>
+      <arg>GNNRefine.py</arg>
+      <arg>{input}</arg>
+      <arg>{runtime_output_dir}</arg>
+    </command>
+    <resources memory="8g" cpus="2" />
+    <env>
+      <var name="DGLBACKEND" value="pytorch" />
+      <var name="PYTHONUNBUFFERED" value="1" />
+    </env>
+  </runtime>
+  <inputs>
+    <param name="input" kind="file" format="pdb" required="true"
+           label="Input PDB"
+           description="Starting protein model in PDB format to refine" />
+    <param name="output_dir" kind="directory" required="false"
+           label="Published output directory"
+           description="Optional directory where the worker will copy the generated results" />
+  </inputs>
+  <options>
+    <param name="n_decoy" flag="-n_decoy" type="int" required="false" default="1"
+           description="Number of decoys built in each iteration" />
+    <param name="n_proc" flag="-n_proc" type="int" required="false" default="1"
+           description="Number of parallel processes to use during refinement" />
+    <param name="device_id" flag="-device_id" type="int" required="false" default="-1"
+           description="Device id: -1 for CPU, >=0 for GPU" />
+    <param name="save_qa" flag="-save_qa" type="bool" required="false" default="false"
+           description="Save quality assessment outputs" />
+    <param name="save_le_decoy" flag="-save_le_decoy" type="bool" required="false" default="false"
+           description="Save the lowest-energy decoy of each iteration" />
+    <param name="save_all_decoy" flag="-save_all_decoy" type="bool" required="false" default="false"
+           description="Save all decoy models generated during refinement" />
+    <param name="only_pred_dist" flag="-only_pred_dist" type="bool" required="false" default="false"
+           description="Only predict refined distance distributions without full relaxation" />
+  </options>
+  <outputs>
+    <artifact name="refined_models" kind="directory" format="mixed"
+              label="Refined models"
+              description="Refined PDB models and optional auxiliary outputs produced by GNNRefine" />
+  </outputs>
+</tool>

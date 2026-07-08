@@ -1,0 +1,15 @@
+Parameters for Criterion 2, low-resolution distributions
+
+Energy values - divide by                         =   10
+Max.energy difference from lowest energy (abs)    =  200
+Energy interval (abs)                             =   10
+Max.energy difference from lowest energy ( % )    =  100
+Energy interval ( % )                             =    1
+Max.distance from experimental position           =  110
+Distance interval [A]                             =   10
+No.of no.of lowest-energy matches to analyze      =    1
+No.of lowest-energy matches                       = 1000
+No. interval                                      = 1000
+Calculate res-res predctns 1-yes, 0-no(save time) =    0
+Min.energy for all (disabled) (1) or individ. (0) =    0
+E_%/Dist.(2), E_abs/Dist.(1), No./Dist.(0)        =    0

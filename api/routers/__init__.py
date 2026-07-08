@@ -1,0 +1,13 @@
+from .auth import router as auth_router
+from .projects import router as projects_router
+from .pipelines import router as pipelines_router
+from .tools import service_types_router, tools_router, tool_params_router
+from .executions import router as executions_router
+from .orchestration import router as orchestration_router
+from .monitoring import router as monitoring_router
+from .files import router as files_router
+from .manual import router as manual_router
+from .documentation import router as documentation_router
+from .reports import router as reports_router
+from .profile import router as profile_router
+from .groups import router as groups_router

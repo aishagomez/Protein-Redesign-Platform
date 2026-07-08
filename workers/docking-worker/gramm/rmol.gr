@@ -1,0 +1,20 @@
+# Filename  Fragment  ID      Filename  Fragment  ID     [paral/anti  max.ang]
+#         (free dock)                 (free dock)
+# ----------------------------------------------------------------------------
+
+  2vyc1.pdb    *    2vyc1    2vyc2.pdb     *     2vyc2
+
+# 4pti.pdb     *    4pti     1vii.pdb      *     1vii
+  
+# 1vii.pdb     *    1vii     4pti.pdb      *     4pti
+
+# 1vii.pdb     *    1vii     1vii.pdb      *     1vii
+
+# 4pti.pdb     *    4pti     4pti.pdb      *     4pti
+
+# 2ptcE.pdb    *    2ptcE     4pti.pdb     *     4pti
+# 2ptcE.pdb    *    2ptcE    2ptcI.pdb     *     2ptcI
+# 3apr.pdb     *    3apr     2ptcE.pdb     *     4pti
+# 2ptc.pdb     E    2ptcE     2ptc.pdb     I     2ptcI
+# 2hhb.pdb     A    2hhbA     2hhb.pdb     B     2hhbB
+# 3apr.pdb     E    3aprE     3apr.pdb     I     3aprI

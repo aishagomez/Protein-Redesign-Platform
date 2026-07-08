@@ -1,0 +1,13 @@
+mpif90 -O3 -o gramm -mcmodel=medium                                     \
+gramnp.c                                                                \
+c1ipd.c c1atm.c c1res.c c1tab.c                                         \
+r1opr.c r1inn.c r1inp.c r1ind.c r1iov.c r1pre.c r1prr.c r1rah.c r1rha.c \
+r1mla.c r1fit.c r1rot.c r1dig.c r1ffw.c r1fft.c r1mul.c r1pek.c r1flt.c \
+r1srt.c r1ram.c r1trf.c r1hre.c r1res.c                                 \
+cninr.c cnpst.c                                                         \
+t1opr.c t1inp.c t1ind.c t1ali.c t1oup.c tm2nnew.f                       \
+r1usi.c r1us1.c r1us2.c r1us3.c r1us4.c r1us5.c r1us6.c r1us8.c         \
+w1opr.c w1inp.c w1inn.c w1irs.c w1crd.c w1clu.c w1sco.c w1vdw.c w1sta.c \
+w1rr1.c w1rr2.c w1bak.c wbpar.c wbpre.c wbecr.c wbene.c                 \
+w1out.c                                                                 \
+-lm -lfftw3f 

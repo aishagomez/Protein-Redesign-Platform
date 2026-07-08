@@ -1,0 +1,7 @@
+Alignment (full, intr) ........................................ amode= full
+TM-score for A (0.0 - 1.0) ................................... tmscoa= 0.4
+TM-score for B (0.0 - 1.0) ................................... tmscob= 0.4
+Coverage for A (0 - 100) if<3 res aligned coord not real...... covera= 40
+Coverage for B (0 - 100) if<3 res aligned coord not real...... coverb= 40
+Number of matches to output .................................  maxmch= 10
+Output file separate/joint ..................................... sejo= joint

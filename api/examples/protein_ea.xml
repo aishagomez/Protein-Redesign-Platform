@@ -1,0 +1,75 @@
+<tool name="protein_ea" version="1.0" stage="evolution" active="true">
+<description>Evolutionary algorithm for protein design using scenario-based execution</description>
+<runtime mode="docker">
+  <image>protein-ea:1.0</image>
+  <workdir>/app</workdir>
+  <command>
+     <arg>/app/protmut_run.sh</arg>
+     <arg>{scenario_name}</arg>
+     <arg>{algorithm}</arg>
+     <arg>pdbfile={pdbfile},partners={partners},ligand_chain={ligand_chain}</arg>
+     <arg>gen={gen},popsize={popsize},mutp={mutp}</arg>
+     <arg>fitness_idxs={fitness_idxs}</arg>
+     <arg>fitness_weights={fitness_weights}</arg>
+     <arg>checkpoint={checkpoint}</arg>
+     <arg>checks={checks}</arg>
+     <arg>mobj={mobj}</arg>
+     <arg>randomseed={randomseed}</arg>
+  </command>
+  <resources memory="8g" cpus="2" />
+  <env>
+    <var name="PYTHONUNBUFFERED" value="1" />
+    <var name="PROTEIN_EA_OUTPUT_PATH" value="{runtime_output_dir}" />
+    <var name="PROTEIN_EA_CONFIG_PATH" value="{scenario_root}/" />
+    <var name="PROTEIN_EA_FACE1_FILE_NAME" value="{face1_file_name}" />
+    <var name="PROTEIN_EA_FACE2_FILE_NAME" value="{face2_file_name}" />
+    <var name="PROTEIN_EA_MSA_MATRIX" value="{msa_matrix}" />
+  </env>
+</runtime>
+  <inputs>
+    <param name="scenario_path" kind="directory" required="name"
+           label="Scenario folder or zip" description="Scenario folder or .zip uploaded by the user containing the PDB (if no provided, auto-selected from docking outputs) face A, face B and MSA matrix files" />
+  </inputs>
+  <options>
+    <param name="scenario_name" type="string" required="false" default=""
+           description="Optional scenario name override; defaults to the scenario folder or zip name" />
+    <param name="algorithm" type="string" required="false" default="sea"
+           description="Evolutionary algorithm name such as sea or moea" />
+    <param name="pdbfile" type="string" required="false" default=""
+           description="PDB filename inside the scenario folder" />
+    <param name="partners" type="string" required="true" default=""
+           description="Protein partner chains, for example A_C" />
+    <param name="ligand_chain" type="string" required="true" default=""
+           description="Ligand chain to evolve" />
+    <param name="gen" type="int" required="false" default="5"
+           description="Number of generations" />
+    <param name="popsize" type="int" required="false" default="5"
+           description="Population size" />
+    <param name="mutp" type="float" required="false" default="1"
+           description="Mutation probability" />
+    <param name="fitness_idxs" type="string" required="false" default="2,3"
+           description="Fitness score indexes separated by commas" />
+    <param name="fitness_weights" type="string" required="false" default="-1,1"
+           description="Fitness weights separated by commas" />
+    <param name="checkpoint" type="bool" required="false" default="false"
+           description="Restore from checkpoint if available" />
+    <param name="checks" type="int" required="false" default="2"
+           description="Checkpoint frequency" />
+    <param name="mobj" type="bool" required="false" default="false"
+           description="Enable multiobjective mode" />
+    <param name="randomseed" type="int" required="false" default="15"
+           description="Random seed" />
+    <param name="face1_file_name" type="string" required="false" default="faceA.txt"
+           description="Face A filename inside the scenario" />
+    <param name="face2_file_name" type="string" required="false" default="faceC.txt"
+           description="Face B filename inside the scenario" />
+    <param name="msa_matrix" type="string" required="false" default="MSA_matrix.tsv"
+           description="MSA matrix filename inside the scenario" />
+    <param name="complex_pdb_path" type="string" required="false" default=""
+           description="Optional docking complex PDB path to use instead of the auto-selected complex" />
+  </options>
+  <outputs>
+    <artifact name="evolution_outputs" kind="directory" format="mixed"
+              label="Evolution outputs" description="Generated directories, pdb files, checkpoints and statistics" />
+  </outputs>
+</tool>

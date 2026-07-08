@@ -1,0 +1,28 @@
+{
+  "stage_name": "evolution",
+  "tool_id": 3,
+  "tool": "protein_ea",
+  "tool_version": "1.0",
+  "params": {
+    "scenario_path": "/test/test_evolution.zip",
+    "scenario_name": "test_evolution",
+    "algorithm": "sea",
+    "partners": "A_C",
+    "ligand_chain": "C",
+    "output_dir": "/persistent_storage/outputs/testuser/evolution/pipeline_1/stage_3",
+    "pdbfile": "",
+    "gen": 5,
+    "popsize": 5,
+    "mutp": 1.0,
+    "fitness_idxs": "2,3",
+    "fitness_weights": "-1,1",
+    "checkpoint": false,
+    "checks": 2,
+    "mobj": false,
+    "randomseed": 15,
+    "face1_file_name": "faceA.txt",
+    "face2_file_name": "faceC.txt",
+    "msa_matrix": "MSA_matrix.tsv",
+    "msa_matrix_path": "/persistent_storage/uploads/user_1/project_1/MSA_matrix.tsv"
+  }
+}

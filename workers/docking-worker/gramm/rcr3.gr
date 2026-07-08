@@ -1,0 +1,5 @@
+Parameters for Criterion 3, CAPRI-like
+
+Max n-native rank for success                     =  100
+N-native ligand C-alpha RMSD                      =   8
+N-native ligand interface C-alpha RMSD            =   8

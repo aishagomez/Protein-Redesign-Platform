@@ -1,0 +1,29 @@
+PRE - SEARCH
+
+IN  - SEARCH
+
+POST- SEARCH
+
+Weight(0-10)_pos_neg= 100  0
+
+# Protein_name  No_of_residues_in_constraints
+# Res_number    Confidence_(0-10)
+
+2hhbA  3
+3     10
+10    10
+101   10
+
+2hhbB  2
+10     9
+13     8
+
+2ptcE  4
+3      2
+5      1
+11    10
+203    5
+
+2ptcI  0
+
+

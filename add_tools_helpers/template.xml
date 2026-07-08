@@ -1,0 +1,53 @@
+<tool name="{tool_name}" version="1.0" stage="{stage}" active="true">
+  <description>{short_description}</description>
+
+  <runtime mode="docker">
+    <image>{docker_image}</image>
+    <workdir>{workdir}</workdir>
+
+    <command>
+      {command_args}
+    </command>
+
+    <resources memory="{memory}" cpus="{cpus}" />
+
+    <env>
+      {env_vars}
+    </env>
+  </runtime>
+
+  <inputs>
+    <param
+      name="input"
+      kind="file"
+      format="{input_format}"
+      required="true"
+      label="Input file"
+      description="{input_description}"
+    />
+
+    {extra_inputs}
+
+    <param
+      name="output_dir"
+      kind="directory"
+      required="false"
+      label="Published output directory"
+      description="Optional directory where results will be copied"
+    />
+  </inputs>
+
+  <options>
+    {options}
+  </options>
+
+  <outputs>
+    <artifact
+      name="{artifact_name}"
+      kind="{artifact_kind}"
+      format="{artifact_format}"
+      label="{artifact_label}"
+      description="{artifact_description}"
+    />
+  </outputs>
+</tool>
