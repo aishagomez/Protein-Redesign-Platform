@@ -48,6 +48,8 @@ Los workers no consultan PostgreSQL directamente. Reciben desde la API un `tool_
 
 ## Herramientas importadas
 
+En estos documentos se puede configurar los recursos de cada herramienta.
+
 - [gnnrefine.xml](api/examples/gnnrefine.xml): `gnn_refine`
 - [gramm.xml](api/examples/gramm.xml): `gramm`
 - [protein_ea.xml](api/examples/protein_ea.xml): `protein_ea`
