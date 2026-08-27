@@ -47,7 +47,7 @@ def _load_orchestration_module():
     return module
 
 
-class EvolutionHydrationTests(unittest.TestCase):
+class InteractionOptimizationHydrationTests(unittest.TestCase):
     def test_uses_previous_stage_pdb_when_scenario_package_has_no_pdb(self):
         orchestration = _load_orchestration_module()
 
@@ -64,7 +64,7 @@ class EvolutionHydrationTests(unittest.TestCase):
 
             previous_stage = SimpleNamespace(stage_name="refinement", output_files=[str(pdb_path)])
 
-            resolved = orchestration._hydrate_evolution_params(
+            resolved = orchestration._hydrate_interaction_optimization_params(
                 SimpleNamespace(),
                 {
                     "scenario_path": str(scenario_dir),

@@ -62,15 +62,15 @@ services:
       - broker
       - api
 
-  evolution-worker:
+  interaction-optimization-worker:
     build: ./worker
     volumes:
       - ./api:/app
     environment:
-      WORKER_NAME: evolution
+      WORKER_NAME: interaction_optimization
       ORCHESTRATOR_URL: http://api:8000
       INTERNAL_TOKEN: internal-secret-change-me
-    command: sh -c "celery -A celery_app worker --loglevel=info -Q evolution --without-heartbeat false"
+    command: sh -c "celery -A celery_app worker --loglevel=info -Q interaction_optimization --without-heartbeat false"
     depends_on:
       - broker
       - api

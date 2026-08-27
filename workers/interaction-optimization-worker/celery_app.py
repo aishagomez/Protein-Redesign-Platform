@@ -1,7 +1,7 @@
 from celery import Celery
 
 celery_app = Celery(
-    "evolution_worker",
+    "interaction_optimization_worker",
     broker="amqp://user:password@broker:5672//",
     include=["tasks"],
 )
@@ -20,6 +20,6 @@ celery_app.conf.update(
     worker_send_task_events=True,
     task_send_sent_event=True,
     task_routes={
-        "tasks.run_stage": {"queue": "evolution"},
+        "tasks.run_stage": {"queue": "interaction_optimization"},
     },
 )

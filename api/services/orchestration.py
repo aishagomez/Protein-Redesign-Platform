@@ -34,6 +34,7 @@ NON_RETRYABLE_RESOURCE_ERRORS = (
 )
 
 VALID_TRANSITIONS = {
+    "created": {"pending"},
     "pending": {"running", "waiting_for_approval"},
     "running": {"completed", "failed", "waiting_for_approval", "retrying"},
     "retrying": {"pending"},
@@ -45,7 +46,7 @@ VALID_TRANSITIONS = {
 STAGE_QUEUES = {
     "refinement": "refinement",
     "docking": "docking",
-    "evolution": "evolution",
+    "interaction_optimization": "interaction_optimization",
 }
 
 
@@ -101,7 +102,9 @@ def _inspect_scenario_contents(scenario_reference: str) -> dict:
     return {
         "has_pdb": any(name.endswith(".pdb") for name in files),
         "has_facea": any(name == "facea.txt" for name in files),
-        "has_facec": any(name == "facec.txt" for name in files),
+        # ProteinEA historically used faceC.txt, but the second protein may
+        # legitimately be chain B after docking. Accept both conventional names.
+        "has_facec": any(name in {"facec.txt", "faceb.txt"} for name in files),
         "has_msa": any(
             (name.endswith(".tsv") and "msa" in name)
             or (name.endswith(".txt") and ("msa" in name or "alignment" in name))
@@ -111,7 +114,7 @@ def _inspect_scenario_contents(scenario_reference: str) -> dict:
 
 
 def _warn_pause_between_stages(stage_name: str, params: dict):
-    if stage_name == "evolution":
+    if stage_name == "interaction_optimization":
         if params.get("scenario_path") is None and params.get("msa_matrix_path") is None:
             return
         if params.get("scenario_path") is None and params.get("msa_matrix_path") is not None:
@@ -152,7 +155,7 @@ def _validate_stage_params(stage_name: str, params: dict):
             )
         return
 
-    if stage_name == "evolution":
+    if stage_name == "interaction_optimization":
         scenario_path = params.get("scenario_path") or params.get("input_scenario_path") or params.get("scenario_dir")
         msa_matrix_path = params.get("msa_matrix_path")
         missing = []
@@ -166,7 +169,7 @@ def _validate_stage_params(stage_name: str, params: dict):
         if missing:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=f"Etapa 'evolution' requiere params: {missing}",
+                detail=f"Etapa 'interaction_optimization' requiere params: {missing}",
             )
         return
 
@@ -197,19 +200,19 @@ def _validate_stage_order(stage_order: list[dict]):
                     )
             else:
                 _validate_stage_params(stage_name, params)
-        elif stage_name == "evolution":
+        elif stage_name == "interaction_optimization":
             scenario_path = params.get("scenario_path") or params.get("input_scenario_path") or params.get("scenario_dir")
             msa_matrix_path = params.get("msa_matrix_path")
             if not scenario_path:
                 if not msa_matrix_path:
                     raise HTTPException(
                         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                        detail="Etapa 'evolution' requiere 'msa_matrix_path' cuando el escenario se construye desde docking",
+                        detail="Etapa 'interaction_optimization' requiere 'msa_matrix_path' cuando el escenario se construye desde docking",
                     )
                 if "docking" not in previous_stage_names:
                     raise HTTPException(
                         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                        detail="Etapa 'evolution' sin 'scenario_path' requiere una etapa 'docking' previa",
+                        detail="Etapa 'interaction_optimization' sin 'scenario_path' requiere una etapa 'docking' previa",
                     )
             else:
                 _validate_stage_params(stage_name, params)
@@ -232,18 +235,18 @@ def _validate_stage_params_with_history(stage_name: str, params: dict, previous_
                 )
             return
 
-    if stage_name == "evolution":
+    if stage_name == "interaction_optimization":
         scenario_path = params.get("scenario_path") or params.get("input_scenario_path") or params.get("scenario_dir")
         if not scenario_path:
             if not params.get("msa_matrix_path"):
                 raise HTTPException(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="Etapa 'evolution' requiere 'msa_matrix_path' cuando el escenario se construye desde docking",
+                    detail="Etapa 'interaction_optimization' requiere 'msa_matrix_path' cuando el escenario se construye desde docking",
                 )
             if "docking" not in previous_stage_names:
                 raise HTTPException(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="Etapa 'evolution' sin 'scenario_path' requiere una etapa 'docking' previa",
+                    detail="Etapa 'interaction_optimization' sin 'scenario_path' requiere una etapa 'docking' previa",
                 )
             return
 
@@ -384,8 +387,6 @@ def _launch_stage(stage: StageExecution, db: Session):
     )
 
     stage.celery_task_id = task.id
-    stage.status = "running"
-    stage.started_at = datetime.now(timezone.utc)
     stage.updated_at = datetime.now(timezone.utc)
     db.commit()
 
@@ -407,8 +408,8 @@ def _resolve_stage_params(stage: StageExecution, db: Session) -> dict:
 
     if stage.stage_name == "docking":
         params = _hydrate_docking_params(params, previous_stages)
-    elif stage.stage_name == "evolution":
-        params = _hydrate_evolution_params(stage, params, previous_stages)
+    elif stage.stage_name == "interaction_optimization":
+        params = _hydrate_interaction_optimization_params(stage, params, previous_stages)
 
     stage.params = params
     db.commit()
@@ -456,7 +457,7 @@ def _pick_previous_stage_with_pdb(previous_stages: list[StageExecution]) -> tupl
     return None, None
 
 
-def _hydrate_evolution_params(stage: StageExecution, params: dict, previous_stages: list[StageExecution]) -> dict:
+def _hydrate_interaction_optimization_params(stage: StageExecution, params: dict, previous_stages: list[StageExecution]) -> dict:
     resolved = dict(params)
     scenario_path = resolved.get("scenario_path") or resolved.get("input_scenario_path") or resolved.get("scenario_dir")
     source_stage, selected_pdb = _pick_previous_stage_with_pdb(previous_stages)
@@ -467,7 +468,7 @@ def _hydrate_evolution_params(stage: StageExecution, params: dict, previous_stag
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=(
-                    "El paquete de evolution debe incluir faceA.txt, faceC.txt y un archivo MSA "
+                    "El paquete de interaction optimization debe incluir faceA.txt, faceB.txt o faceC.txt y un archivo MSA "
                     "(por ejemplo alignment.txt o MSA_matrix.tsv). Asegure que el paquete de escenario esté completo."
                 ),
             )
@@ -476,7 +477,7 @@ def _hydrate_evolution_params(stage: StageExecution, params: dict, previous_stag
                 raise HTTPException(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail=(
-                        "El zip de evolution no contiene un PDB y no hay una etapa previa con PDB generado. "
+                        "El zip de interaction optimization no contiene un PDB y no hay una etapa previa con PDB generado. "
                         "Debe incluir un PDB en el paquete o ejecutar una etapa previa que genere al menos un PDB."
                     ),
                 )
@@ -486,30 +487,30 @@ def _hydrate_evolution_params(stage: StageExecution, params: dict, previous_stag
     if not source_stage or not selected_pdb:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="No se encontro una etapa previa con un PDB disponible para construir el escenario de evolution",
+            detail="No se encontro una etapa previa con un PDB disponible para construir el escenario de interaction optimization",
         )
 
     msa_matrix_path = resolved.get("msa_matrix_path")
     if not msa_matrix_path:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Falta 'msa_matrix_path' para construir el escenario de evolution",
+            detail="Falta 'msa_matrix_path' para construir el escenario de interaction optimization",
         )
 
-    scenario_dir, derived = _build_evolution_scenario(stage, source_stage, resolved)
+    scenario_dir, derived = _build_interaction_optimization_scenario(stage, source_stage, resolved)
     resolved.update(derived)
     resolved["scenario_path"] = str(scenario_dir)
     return resolved
 
 
-def _build_evolution_scenario(stage: StageExecution, source_stage: StageExecution, params: dict) -> tuple[Path, dict]:
+def _build_interaction_optimization_scenario(stage: StageExecution, source_stage: StageExecution, params: dict) -> tuple[Path, dict]:
     complex_pdb = params.get("complex_pdb_path") or _pick_final_model_or_first_pdb(source_stage.output_files or [])
     if not complex_pdb:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=(
-                "No se encontro un PDB de docking para construir el escenario de evolution. "
-                "Debe incluir el PDB en el zip de evolución o proveer un stage de docking previo que genere al menos un PDB."
+                "No se encontro un PDB de docking para construir el escenario de interaction optimization. "
+                "Debe incluir el PDB en el zip de optimización de interacciones o proveer un stage de docking previo que genere al menos un PDB."
             ),
         )
 
@@ -528,13 +529,13 @@ def _build_evolution_scenario(stage: StageExecution, source_stage: StageExecutio
     complex_source = Path(complex_pdb)
     copied_pdb = scenario_dir / complex_source.name
     shutil.copy2(complex_source, copied_pdb)
-    prepared_pdb = _prepare_evolution_complex_pdb(copied_pdb)
+    prepared_pdb = _prepare_interaction_optimization_complex_pdb(copied_pdb)
 
     chains = _extract_chain_residues(prepared_pdb)
     if len(chains) < 2:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="El PDB de docking necesita al menos dos cadenas para construir el escenario de evolution",
+            detail="El PDB de docking necesita al menos dos cadenas para construir el escenario de interaction optimization",
         )
 
     chain_map = {chain_id: residues for chain_id, residues in chains}
@@ -610,10 +611,6 @@ def _pick_dummy_pdb(output_files: list[str]) -> Optional[str]:
 
 def _ensure_docking_final_model(stage: StageExecution, db: Session):
     output_files = list(stage.output_files or [])
-    existing_final_model = _find_final_model_pdb(output_files)
-    if existing_final_model and Path(existing_final_model).exists():
-        return
-
     candidates = _pick_docking_complex_pdbs(output_files)
     if not candidates:
         return
@@ -623,7 +620,21 @@ def _ensure_docking_final_model(stage: StageExecution, db: Session):
         return
 
     final_model_path = selected.parent / "final_model.pdb"
-    if not final_model_path.exists():
+    lines = selected.read_text(encoding="utf-8", errors="ignore").splitlines()
+    model_starts = [index for index, line in enumerate(lines) if line.startswith("MODEL")]
+
+    if model_starts:
+        start = model_starts[-1] + 1
+        end = next(
+            (index for index in range(start, len(lines)) if lines[index].startswith("ENDMDL")),
+            len(lines),
+        )
+        model_lines = [
+            line for line in lines[start:end]
+            if line.startswith(("ATOM", "HETATM", "TER"))
+        ]
+        final_model_path.write_text("\n".join(model_lines) + "\nEND\n", encoding="utf-8")
+    else:
         shutil.copy2(selected, final_model_path)
 
     if str(final_model_path) not in output_files:
@@ -659,7 +670,7 @@ def _extract_chain_residues(pdb_path: Path) -> list[tuple[str, list[int]]]:
 
 
 
-def _prepare_evolution_complex_pdb(copied_pdb: Path) -> Path:
+def _prepare_interaction_optimization_complex_pdb(copied_pdb: Path) -> Path:
     lines = copied_pdb.read_text(encoding="utf-8", errors="ignore").splitlines()
     if not any(line.startswith("MODEL") for line in lines):
         return copied_pdb
@@ -735,9 +746,8 @@ def advance_pipeline(pipeline_id: int, db: Session):
         )
     else:
         _launch_stage(next_stage, db)
-        pipeline.status = "running"
+        pipeline.status = "pending"
         db.commit()
-
 
 def _get_active_stages(pipeline_id: int, db: Session):
     stages = (
@@ -801,7 +811,7 @@ def launch_pipeline(
 ) -> dict:
     pipeline = _get_pipeline_owned(db, project_id, pipeline_id, user_id)
 
-    if pipeline.status == "running":
+    if pipeline.status in ("pending", "running"):
         raise HTTPException(status_code=409, detail="Pipeline ya esta en ejecucion")
 
     _validate_stage_order(stage_order)
@@ -826,7 +836,7 @@ def launch_pipeline(
         db.add(stage_execution)
         created_stages.append(stage_execution)
 
-    pipeline.status = "running"
+    pipeline.status = "pending"
     pipeline.pause_between_stages = pause_between_stages
     pipeline.stage_order = [stage_def["stage_name"] for stage_def, _ in resolved_stage_defs]
     pipeline.started_at = datetime.now(timezone.utc)
@@ -912,7 +922,7 @@ def approve_stage(
         waiting_stage.params = new_params
 
     waiting_stage.status = "pending"
-    pipeline.status = "running"
+    pipeline.status = "pending"
     db.commit()
     _launch_stage(waiting_stage, db)
 
@@ -1001,7 +1011,7 @@ def retry_stage_manual(
     current.status = "failed"
     current.error_message = "Reemplazada por retry manual del usuario"
 
-    pipeline.status = "running"
+    pipeline.status = "pending"
     db.commit()
     db.refresh(new_stage)
 
@@ -1015,15 +1025,20 @@ def retry_stage_manual(
         "status": new_stage.status,
     }
 
-
 def on_stage_started(db: Session, stage_execution_id: int, celery_task_id: str):
     stage = _get_stage(db, stage_execution_id)
+
     stage.celery_task_id = celery_task_id
     stage.status = "running"
     stage.started_at = datetime.now(timezone.utc)
     stage.updated_at = datetime.now(timezone.utc)
-    db.commit()
 
+    pipeline = stage.pipeline
+    if pipeline.status != "running":
+        pipeline.status = "running"
+        pipeline.updated_at = datetime.now(timezone.utc)
+
+    db.commit()
 
 def on_stage_completed(db: Session, stage_execution_id: int, output_files: list, metadata: dict):
     stage = _get_stage(db, stage_execution_id)

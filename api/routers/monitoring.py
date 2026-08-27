@@ -94,7 +94,7 @@ def monitoring_summary(
     timeout = timedelta(seconds=WORKER_TIMEOUT_SECONDS)
     watchdog = get_watchdog(SessionLocal)
     raw_worker_last_seen = getattr(watchdog, "worker_last_seen", {})
-    expected_workers = ["refinement", "docking", "evolution"]
+    expected_workers = ["refinement", "docking", "interaction_optimization"]
     worker_status = []
 
     for worker_name in expected_workers:

@@ -26,10 +26,10 @@ Servicios principales definidos en [docker-compose.yml](docker-compose.yml):
 | `frontend` | Interfaz web React/Vite. |
 | `refinement-worker` | Ejecuta `gnn_refine`. |
 | `docking-worker` | Ejecuta `gramm`. |
-| `evolution-worker` | Ejecuta `protein_ea`. |
+| `interaction-optimization-worker` | Ejecuta `protein_ea`. |
 | `gnnrefine-runtime` | Imagen cientifica para refinamiento. |
 | `gramm-runtime` | Imagen cientifica para docking. |
-| `protein-ea-runtime` | Imagen cientifica para evolucion. |
+| `protein-ea-runtime` | Imagen cientifica para optimización de interacciones. |
 | `email-notifier` | Envio interno de notificaciones. |
 | `pgadmin` | Administracion visual de PostgreSQL. |
 
@@ -121,7 +121,7 @@ Hay ejemplos listos en [docs](docs/):
 
 - [example_r.json](docs/example_r.json): solo refinamiento.
 - [example_rd.json](docs/example_rd.json): refinamiento y docking.
-- [example_rde.json](docs/example_rde.json): refinamiento, docking y evolucion.
+- [example_rde.json](docs/example_rde.json): refinamiento, docking y optimización de interacciones.
 
 Tambien existen scripts de humo:
 

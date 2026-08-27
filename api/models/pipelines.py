@@ -8,7 +8,7 @@ class Pipeline(Base):
     id = Column(Integer, primary_key=True, index=True)
     project_id = Column(Integer, ForeignKey("projects.id"))
     version = Column(String)
-    status = Column(String, default="pending")  # pending|running|waiting_for_approval|completed|failed
+    status = Column(String, default="created") 
     started_at = Column(DateTime(timezone=True))
     finished_at = Column(DateTime(timezone=True))
     parameters = Column(JSON)

@@ -6,7 +6,7 @@ Workers Celery especializados por etapa cientifica.
 
 - [refinement-worker](C:/Users/aisha/OneDrive/Escritorio/tesis/Implementación/2. Desarrollo/Segunda versión/workers/refinement-worker): ejecuta `gnn_refine`.
 - [docking-worker](C:/Users/aisha/OneDrive/Escritorio/tesis/Implementación/2. Desarrollo/Segunda versión/workers/docking-worker): ejecuta `gramm`.
-- [evolution-worker](C:/Users/aisha/OneDrive/Escritorio/tesis/Implementación/2. Desarrollo/Segunda versión/workers/evolution-worker): ejecuta `protein_ea`.
+- [interaction-optimization-worker](C:/Users/aisha/OneDrive/Escritorio/tesis/Implementación/2. Desarrollo/Segunda versión/workers/interaction-optimization-worker): ejecuta `protein_ea`.
 
 ## Patrón comun
 
@@ -28,5 +28,5 @@ Cada worker:
 ## Observaciones
 
 - los tres workers dependen del contrato declarativo de `tool_runtimes` y `tool_parameters`, pero no consultan PostgreSQL directamente;
-- el worker de evolucion exige `scenario_path`, `partners` y `ligand_chain`;
+- el worker de optimización de interacciones exige `scenario_path`, `partners` y `ligand_chain`;
 - los resultados finales se toman del directorio `output_dir` publicado por cada etapa.

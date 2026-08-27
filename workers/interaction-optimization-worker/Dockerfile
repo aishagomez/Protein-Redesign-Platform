@@ -20,4 +20,4 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY celery_app.py tasks.py ./
 
-CMD ["celery", "-A", "celery_app", "worker", "--loglevel=info", "-Q", "evolution", "--hostname=evolution@%h", "--without-gossip", "--without-mingle"]
+CMD ["celery", "-A", "celery_app", "worker", "--loglevel=info", "-Q", "interaction_optimization", "--hostname=interaction_optimization@%h", "--without-gossip", "--without-mingle"]

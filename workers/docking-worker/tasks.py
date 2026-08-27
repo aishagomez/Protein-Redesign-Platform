@@ -259,8 +259,8 @@ def _build_command(runtime, runtime_params):
     return command, rendered_workdir, context
 
 
-def _run_docker(runtime, command, rendered_workdir, context, workdir):
-    docker = ["docker", "run", "--rm"]
+def _run_docker(runtime, command, rendered_workdir, context, workdir, stage_execution_id):
+    docker = ["docker", "run", "--rm", "--label", f"platform.stage_execution_id={stage_execution_id}"]
 
     parent_container = os.environ.get("HOSTNAME")
     if parent_container:
@@ -327,7 +327,7 @@ def _execute(stage_execution_id: int, stage_name: str, tool_id: int, params: dic
     print(f"  ligand_path        : {runtime_params['ligand_path']}")
     print(f"  output_dir         : {runtime_params['output_dir']}")
 
-    completed = _run_docker(runtime, command, rendered_workdir, context, workdir)
+    completed = _run_docker(runtime, command, rendered_workdir, context, workdir, stage_execution_id)
     outputs = _publish_outputs(Path(runtime_params["runtime_workdir"]), Path(runtime_params["output_dir"]))
 
     if not outputs:

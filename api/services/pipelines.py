@@ -26,7 +26,7 @@ def create_pipeline(db: Session, project_id: int, data: PipelineCreate, user_id:
         project_id=project_id,
         version=data.version,
         parameters=data.parameters,
-        status="pending",
+        status="created",
     )
     db.add(pipeline)
     db.commit()

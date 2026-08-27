@@ -40,7 +40,7 @@ class StageExecution(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     pipeline_id = Column(Integer, ForeignKey("pipelines.id"), nullable=False)
-    stage_name = Column(String(50), nullable=False)   # refinement|docking|evolution
+    stage_name = Column(String(50), nullable=False)   # refinement|docking|interaction_optimization
     stage_order_index = Column(Integer, nullable=False)
     tool_id = Column(Integer, ForeignKey("tools.id"))
     tool = Column(String(100), nullable=False)

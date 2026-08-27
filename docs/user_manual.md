@@ -1,30 +1,30 @@
-# Manual de Usuario - Plataforma de Pipelines Bioinformaticos
+# Manual de Usuario - Plataforma de Pipelines Bioinformáticos
 
-## Flujo de Trabajo Basico
+## Flujo de Trabajo Básico
 
-1. **Registro e Inicio de Sesion**: Crea una cuenta y autenticate.
+1. **Registro e Inicio de Sesión**: Crea una cuenta y autentícate.
 2. **Crear Proyecto**: Organiza tus trabajos en proyectos.
 3. **Subir Archivos**: Carga archivos de entrada (PDB, MSA, etc.).
-4. **Crear Pipeline**: Define las etapas y parametros.
-5. **Ejecutar Pipeline**: Lanza la ejecucion y monitorea progreso.
-6. **Descargar Resultados**: Obten los archivos generados.
-7. **Exportar Reportes**: Descarga resumenes en `md` o `json`.
+4. **Crear Pipeline**: Define las etapas y parámetros.
+5. **Ejecutar Pipeline**: Lanza la ejecución y monitorea progreso.
+6. **Descargar Resultados**: Obtén los archivos generados.
+7. **Exportar Reportes**: Descarga resúmenes en `md` o `json`.
 
 ## Uso de la GUI
 
-La interfaz grafica web esta disponible, por defecto, en `http://localhost:5173`.
+La interfaz grafica web está disponible, por defecto, en `http://localhost:5173`.
 Desde ella se puede registrar usuarios, iniciar sesion, crear proyectos,
-componer ejecuciones por etapas, monitorear estados, descargar archivos y
+componer ejecuciónes por etapas, monitorear estados, descargar archivos y
 consultar reportes sin usar comandos de consola.
 
-### Acceso e Inicio de Sesion
+### Acceso e Inicio de Sesión
 
 1. Abre el frontend en el navegador.
 2. Si aun no tienes usuario, entra a `Crear cuenta`.
 3. Completa `Username`, `Email`, `Password` y `Confirm password`.
-4. Vuelve al login e ingresa con email y contrasena.
+4. Vuelve al login e ingresa con email y contraseña.
 
-Cuando la autenticacion es correcta, la aplicacion carga la consola principal.
+Cuando la autenticación es correcta, la aplicacion carga la consola principal.
 El menu lateral muestra las secciones disponibles:
 
 - `Dashboard`
@@ -40,10 +40,10 @@ El menu lateral muestra las secciones disponibles:
 
 El `Dashboard` resume la actividad del sistema. En esta pantalla puedes:
 
-- Ver KPIs de pipelines activos, ejecuciones en curso, fallos recientes y
+- Ver KPIs de pipelines activos, ejecuciónes en curso, fallos recientes y
   herramientas disponibles.
 - Revisar la tabla `Pipeline executions` con pipelines recientes.
-- Abrir un pipeline con el boton `Open`.
+- Abrir un pipeline con el botón `Open`.
 - Consultar fallos recientes y herramientas importadas.
 
 Para usuarios no administradores, algunos datos de observabilidad profunda se
@@ -67,66 +67,66 @@ Para crear un pipeline dentro de un proyecto:
 3. Pulsa `Add pipeline`.
 4. Abre el pipeline desde la lista para entrar al detalle.
 
-Tambien puedes eliminar un pipeline desde `Project inventory`. El primer clic
-activa la confirmacion y el segundo clic en `Confirm delete` ejecuta el borrado.
+También puedes eliminar un pipeline desde `Project inventory`. El primer clic
+activa la confirmacion y el segúndo clic en `Confirm delete` ejecuta el borrado.
 
-### Detalle de Pipeline y Compositor de Ejecucion
+### Detalle de Pipeline y Compositor de Ejecución
 
 Al abrir un pipeline se muestra la vista `Pipeline #<id>`, que contiene el
-estado de la ejecucion, el compositor de etapas y el detalle de cada etapa.
+estado de la ejecución, el compositor de etapas y el detalle de cada etapa.
 
 #### Revisar Estado
 
 En `Pipeline state` se observa:
 
-- Version del pipeline.
+- Versión del pipeline.
 - Estado actual (`pending`, `running`, `waiting_for_approval`, `completed` o
   `failed`).
-- Si la ejecucion usa pausa entre etapas.
-- Lista de etapas ejecutadas o en ejecucion.
+- Si la ejecución usa pausa entre etapas.
+- Lista de etapas ejecutadas o en ejecución.
 
 Selecciona una etapa para ver su informacion en `Execution detail`.
 
-#### Componer y Lanzar una Ejecucion
+#### Componer y Lanzar una Ejecución
 
 Para lanzar un pipeline desde la GUI:
 
 1. Entra al detalle del pipeline.
 2. En `Execution composer`, pulsa `Add stage`.
-3. Selecciona la `Phase`: `Refinement`, `Docking`, `Evolution` u otra fase
-   disponible segun las herramientas importadas.
+3. Selecciona la `Phase`: `Refinement`, `Docking`, `Interaction Optimization` u otra fase
+   disponible según las herramientas importadas.
 4. Selecciona la `Tool` correspondiente.
-5. Completa los parametros principales. Los parametros avanzados aparecen en
+5. Completa los parámetros principales. Los parámetros avanzados aparecen en
    `Advanced parameters`.
-6. Para parametros de tipo archivo, selecciona un archivo ya subido o usa
+6. Para parámetros de tipo archivo, selecciona un archivo ya subido o usa
    `Upload file` dentro del campo. Los directorios se cargan como `.zip`.
 7. Repite `Add stage` para agregar las etapas necesarias.
 8. Si quieres revisar manualmente entre etapas, activa `Pause between stages`.
 9. Pulsa `Launch execution`.
 
-Los parametros `output_dir` y otros parametros marcados como salida no se
+Los parámetros `output_dir` y otros parámetros marcados como salida no se
 rellenan manualmente. La plataforma los asigna de forma automatica. Algunos
-parametros de docking y evolucion tambien se resuelven desde salidas previas,
+parámetros de docking y optimización de interacciones también se resuelven desde salidas previas,
 por ejemplo receptor, ligando o escenario intermedio.
 
 #### Aprobar una Etapa Pausada
 
-Si se activo `Pause between stages`, el pipeline puede quedar en
+Si se activó `Pause between stages`, el pipeline puede quedar en
 `waiting_for_approval`.
 
 1. Selecciona la etapa pausada en `Pipeline state`.
 2. En `Execution detail`, revisa los datos y artefactos disponibles.
 3. Pulsa `Approve next stage`.
 
-Despues de aprobar, la plataforma continua con la siguiente etapa definida en
+Después de aprobar, la plataforma continua con la siguiente etapa definida en
 el compositor.
 
 #### Reintentar una Etapa
 
-En `Manual controls` puedes relanzar una etapa con parametros nuevos:
+En `Manual controls` puedes relanzar una etapa con parámetros nuevos:
 
 1. Escoge la etapa en `Stage to retry`.
-2. Escribe los parametros nuevos en caso de necesitarlo.
+2. Escribe los parámetros nuevos en caso de necesitarlo.
 
 
 ### My Files / Outputs
@@ -142,7 +142,7 @@ Para subir archivos de entrada:
 
 Los archivos subidos desde esta pantalla se guardan como entradas compartidas
 del proyecto (`shared_inputs`) y quedan disponibles para los formularios de
-parametros del compositor.
+parámetros del compositor.
 
 Para descargar entradas:
 
@@ -153,7 +153,7 @@ Para descargar salidas:
 
 1. En `Available outputs`, abre el grupo del pipeline y etapa deseada.
 2. Haz clic sobre el artefacto. La tarjeta muestra el tipo de archivo y el
-   tamano.
+   tamaño.
 
 ### Reports
 
@@ -169,8 +169,8 @@ La vista tambien incluye:
 
 - Comparacion entre pipelines del proyecto.
 - Indicadores cientificos destacados, como mejor energia de docking o mejor
-  TM-score cuando estan disponibles.
-- Visualizaciones simples de duracion, TM-score, tamano de salidas, atomos y
+  TM-score cuando están disponibles.
+- Visualizaciones simples de duracion, TM-score, tamaño de salidas, atomos y
   energia.
 - Resumen de etapas con estado, herramienta, duracion, artefactos y metricas
   cientificas extraidas.
@@ -187,46 +187,46 @@ La pantalla `Tools` muestra las herramientas importadas desde XML:
 
 - Nombre de la herramienta.
 - Tipo de servicio o fase.
-- Version.
-- Descripcion.
+- Versión.
+- Descripción.
 - Runtime usado.
-- Parametros disponibles y tipos de dato.
+- Parámetros disponibles y tipos de dato.
 
-Esta vista sirve para confirmar que una herramienta esta cargada antes de
-usarla en el compositor de ejecucion.
+Esta vista sirve para confirmar que una herramienta está cargada antes de
+usarla en el compositor de ejecución.
 
 ### Monitoring
 
-La pantalla `Monitoring` esta disponible para usuarios administradores. Muestra
+La pantalla `Monitoring` está disponible para usuarios administradores. Muestra
 herramientas disponibles y pipelines activos desde la perspectiva del sistema.
-Usala para revisar salud operativa y estado general de ejecuciones.
+Usala para revisar salud operativa y estado general de ejecuciónes.
 
 ### Recomendaciones de Uso en la GUI
 
 - Sube primero los archivos de entrada desde `My Files / Outputs` o desde el
   campo de archivo del compositor.
 - Verifica que las herramientas aparezcan en `Tools` antes de crear una
-  ejecucion.
+  ejecución.
 - Usa `Pause between stages` cuando necesites inspeccionar salidas intermedias
   antes de continuar.
-- Descarga artefactos desde `Execution detail` si estas revisando una etapa
+- Descarga artefactos desde `Execution detail` si estás revisando una etapa
   especifica, o desde `My Files / Outputs` si quieres navegar todas las salidas
   del proyecto.
 - Revisa `Reports` al finalizar para comparar pipelines y exportar resultados.
 
-## Autenticacion
+## Autenticación
 
 ### Registro
 
 - Ve a la interfaz web o usa la CLI.
-- Proporciona: nombre de usuario, email y contrasena.
+- Proporciona: nombre de usuario, email y contraseña.
 
-### Inicio de Sesion
+### Inicio de Sesión
 
-- Usa email y contrasena.
+- Usa email y contraseña.
 - El token JWT se guarda automaticamente para sesiones posteriores.
 
-### CLI: Autenticacion
+### CLI: Autenticación
 
 ```bash
 bio-cli auth register
@@ -235,7 +235,7 @@ bio-cli auth whoami
 bio-cli auth logout
 ```
 
-## Gestion de Proyectos
+## Gestión de Proyectos
 
 Los proyectos organizan tus pipelines y archivos.
 
@@ -245,7 +245,7 @@ Los proyectos organizan tus pipelines y archivos.
 - CLI:
 
 ```bash
-bio-cli projects create --name "Mi Proyecto" --description "Descripcion opcional"
+bio-cli projects create --name "Mi Proyecto" --description "Descripción opcional"
 ```
 
 ### Listar Proyectos
@@ -266,7 +266,7 @@ bio-cli projects show <project_id>
 bio-cli projects delete <project_id> --yes
 ```
 
-## Gestion de Archivos
+## Gestión de Archivos
 
 ### Subida de Archivos
 
@@ -281,8 +281,8 @@ bio-cli files upload <project_id> ./inputs/MSA.tsv --target-subdir shared_inputs
 Los archivos se almacenan por usuario y proyecto. Tipos comunes:
 
 - PDB para estructuras moleculares.
-- Archivos MSA para evolucion.
-- Otros inputs especificos de herramientas.
+- Archivos MSA para optimización de interacciones.
+- Otros inputs específicos de herramientas.
 
 ### Ver Archivos Subidos
 
@@ -297,7 +297,7 @@ bio-cli files outputs <project_id>
 bio-cli files download <project_id> shared_inputs/receptor.pdb --dest ./descargas
 ```
 
-## Creacion y Ejecucion de Pipelines
+## Creación y Ejecución de Pipelines
 
 ### Crear Pipeline
 
@@ -307,7 +307,7 @@ bio-cli pipelines create <project_id> --version "v1.0" --parameters "{}"
 
 ### Definir Etapas
 
-Las etapas se ejecutan en secuencia. Algunos parametros se resuelven automaticamente desde etapas previas.
+Las etapas se ejecutan en secuencia. Algunos parámetros se resuelven automaticamente desde etapas previas.
 
 #### Refinement
 
@@ -319,7 +319,7 @@ Las etapas se ejecutan en secuencia. Algunos parametros se resuelven automaticam
 - Input: receptor y ligando refinados.
 - Nota: `receptor_path` y `ligand_path` se resuelven automaticamente si vienes de refinement.
 
-#### Evolution
+#### Interaction Optimization
 
 - Input: complejo seleccionado desde docking + MSA.
 - Nota: el escenario intermedio se construye automaticamente.
@@ -330,10 +330,11 @@ Las etapas se ejecutan en secuencia. Algunos parametros se resuelven automaticam
 bio-cli pipelines run <project_id> <pipeline_id> --stage-order .\example_rde.json --watch
 ```
 
-Tambien puedes pasar la configuracion inline:
+También puedes pasar la configuración inline:
 
 ```bash
-bio-cli pipelines run <project_id> <pipeline_id> --stage-order "[{\"stage_name\":\"refinement\",\"tool_id\":1,\"tool\":\"gnn_refine\",\"params\":{}}]"
+bio-cli pipelines run <project_id> <pipeline_id> --stage-order "[{\"stage_name\":\"refinement\",\"tool_id\":1,\"tool\":
+\"gnn_refine\",\"params\":{}}]"
 ```
 
 ### Monitoreo
@@ -377,7 +378,7 @@ bio-cli results stages <pipeline_id>
 
 ```bash
 bio-cli results download <pipeline_id> --dest ./resultados
-bio-cli results download <pipeline_id> --stage evolution --dest ./evolucion
+bio-cli results download <pipeline_id> --stage interaction_optimization --dest ./interaction_optimization
 ```
 
 Los outputs se generan en rutas del estilo:
@@ -407,21 +408,21 @@ bio-cli reports download-pipeline <project_id> <pipeline_id> --format json --des
 
 ## Uso Avanzado
 
-### Parametros Avanzados
+### Parámetros Avanzados
 
 - En la web, se agrupan separadamente.
 - En CLI, se incluyen en el JSON de etapas o en `--new-params`.
 
 ### Pausas Entre Etapas
 
-- Sirven para aprobacion manual y revision intermedia.
+- Sirven para aprobación manual y revision intermedia.
 
 ### Logs y Debugging
 
-- La web muestra un resumen mas limpio del estado.
+- La web muestra un resumen más limpio del estado.
 - Para fallos profundos, revisa logs de API y workers.
 
-## Notas Tecnicas
+## Notas Técnicas
 
 - La plataforma usa Celery para workers asincronos.
 - Los archivos se almacenan en `/persistent_storage`.

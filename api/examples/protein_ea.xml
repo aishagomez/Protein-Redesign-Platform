@@ -1,4 +1,4 @@
-<tool name="protein_ea" version="1.0" stage="evolution" active="true">
+<tool name="protein_ea" version="1.0" stage="interaction_optimization" active="true">
 <description>Evolutionary algorithm for protein design using scenario-based execution</description>
 <runtime mode="docker">
   <image>protein-ea:1.0</image>
@@ -34,7 +34,7 @@
     <param name="scenario_name" type="string" required="false" default=""
            description="Optional scenario name override; defaults to the scenario folder or zip name" />
     <param name="algorithm" type="string" required="false" default="sea"
-           description="Evolutionary algorithm name such as sea or moea" />
+           description="Algorithm name such as sea or moea" />
     <param name="pdbfile" type="string" required="false" default=""
            description="PDB filename inside the scenario folder" />
     <param name="partners" type="string" required="true" default=""
@@ -69,7 +69,7 @@
            description="Optional docking complex PDB path to use instead of the auto-selected complex" />
   </options>
   <outputs>
-    <artifact name="evolution_outputs" kind="directory" format="mixed"
-              label="Evolution outputs" description="Generated directories, pdb files, checkpoints and statistics" />
+    <artifact name="interaction_optimization_outputs" kind="directory" format="mixed"
+              label="Interaction optimization outputs" description="Generated directories, pdb files, checkpoints and statistics" />
   </outputs>
 </tool>

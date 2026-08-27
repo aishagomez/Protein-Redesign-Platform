@@ -1996,7 +1996,7 @@ function AboutPage({ user }) {
       <div className="stacked-panels">
         <Panel title="Platform overview" description="What this application is built to do">
           <div className="summary-list">
-            <div>This console orchestrates staged bioinformatics workflows for refinement, docking, and evolutionary optimization.</div>
+            <div>This console orchestrates staged bioinformatics workflows for refinement, docking, and interaction optimization.</div>
             <div>Users work with uploaded project files, monitor execution state, and download generated artifacts without touching internal storage paths.</div>
             <div>The current architecture combines a React frontend, FastAPI backend, Celery workers, Dockerized scientific runtimes, and persistent shared storage.</div>
           </div>
@@ -2110,7 +2110,7 @@ function normalizeFieldValue(value) {
 }
 
 function getStageTypeOptions(serviceTypes, tools) {
-  const knownOrder = ["refinement", "docking", "evolution"];
+  const knownOrder = ["refinement", "docking", "interaction_optimization"];
   const discovered = new Set(
     tools
       .map((tool) => serviceTypes.find((item) => item.id === tool.service_type_id)?.name)
@@ -2147,7 +2147,7 @@ function matchesProjectPathParameter(file, parameter) {
 function isAutoResolvedParameter(stageName, parameterName) {
   const hiddenByStage = {
     docking: ["receptor_path", "ligand_path", "receptor_id", "ligand_id"],
-    evolution: ["scenario_path", "input_scenario_path", "scenario_dir", "complex_pdb_path"],
+    interaction_optimization: ["scenario_path", "input_scenario_path", "scenario_dir", "complex_pdb_path"],
   };
   return (hiddenByStage[stageName] || []).includes(parameterName);
 }

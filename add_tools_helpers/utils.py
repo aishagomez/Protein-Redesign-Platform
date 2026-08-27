@@ -43,6 +43,6 @@ def readme_to_xlm(readme_path: str, xlm_path: str):
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"Failed to convert {readme_path} to XML: {e.stderr.decode()}")
 
-user_manual_md = "C:/Users/aisha/OneDrive/Escritorio/tesis/Implementación/2. Desarrollo/Segunda versión/docs/user_manual.md"
-user_manual_pdf = "C:/Users/aisha/OneDrive/Escritorio/tesis/Implementación/2. Desarrollo/Segunda versión/docs/user_manual.pdf"
+user_manual_md = "C:/Users/aisha/OneDrive/Escritorio/tesis/Implementación/2. Desarrollo/Tercera versión/docs/user_manual.md"
+user_manual_pdf = "C:/Users/aisha/OneDrive/Escritorio/tesis/Implementación/2. Desarrollo/Tercera versión/docs/user_manual.pdf"
 md_to_pdf(user_manual_md, user_manual_pdf)

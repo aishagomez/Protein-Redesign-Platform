@@ -59,7 +59,7 @@ def _run_tool(stage_name: str, tool: str, params: dict) -> dict:
         output = params.get("receptor_path", "").replace(".pdb", "_docked.pdb")
         return {"output_files": [output], "metadata": {"tool": tool}}
 
-    elif stage_name == "evolution":
+    elif stage_name == "interaction_optimization":
         # subprocess.run(["evo_algorithm",
         #     "--input", params["input_pdb"],
         # ], check=True)

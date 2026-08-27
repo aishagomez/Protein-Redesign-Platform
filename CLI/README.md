@@ -99,7 +99,7 @@ bio-cli results stages 2
 bio-cli results download 2 --dest ./mis_resultados
 
 # Descargar solo una etapa
-bio-cli results download 2 --stage evolution --dest ./evolucion
+bio-cli results download 2 --stage interaction_optimization --dest ./interaction_optimization
 ```
 
 ### Reportes

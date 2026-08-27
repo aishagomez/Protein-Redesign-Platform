@@ -288,7 +288,7 @@ def _publish_outputs(runtime_output_dir: str, published_output_dir: str):
         shutil.copy2(source, destination)
 
 
-def _execute_docker_runtime(runtime: SimpleNamespace, runtime_params: dict, workdir: Path) -> subprocess.CompletedProcess:
+def _execute_docker_runtime(runtime: SimpleNamespace, runtime_params: dict, workdir: Path, stage_execution_id: int) -> subprocess.CompletedProcess:
     if not runtime.image:
         raise ValueError("El runtime docker requiere image")
 
@@ -298,7 +298,7 @@ def _execute_docker_runtime(runtime: SimpleNamespace, runtime_params: dict, work
     command = _render_command(runtime.command_template or [], resolved_context)
     command = _append_parameter_flags(command, runtime_params["_tool_parameters"], runtime_params)
 
-    docker_command = ["docker", "run", "--rm"]
+    docker_command = ["docker", "run", "--rm", "--label", f"platform.stage_execution_id={stage_execution_id}"]
     parent_container = os.environ.get("HOSTNAME")
     if parent_container:
         docker_command.extend(["--volumes-from", parent_container])
@@ -352,7 +352,7 @@ def _execute(stage_execution_id: int, stage_name: str, tool_id: int, params: dic
     if runtime.mode != "docker":
         raise ValueError(f"El refinement-worker solo soporta runtime mode='docker' por ahora, no '{runtime.mode}'")
 
-    completed = _execute_docker_runtime(runtime, runtime_params, workdir)
+    completed = _execute_docker_runtime(runtime, runtime_params, workdir, stage_execution_id)
     _publish_outputs(runtime_params["runtime_output_dir"], runtime_params["output_dir"])
 
     outputs = _collect_outputs(runtime_params["output_dir"])

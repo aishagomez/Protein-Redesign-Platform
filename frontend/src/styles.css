@@ -449,12 +449,6 @@ input, textarea, select {
   flex-wrap: wrap;
 }
 
-/* ============ Buttons ============
-   .btn + modificador es el sistema vigente. Las clases heredadas
-   (.primary-button, .secondary-button, .danger-button, .link-button)
-   se declaran explícitamente aquí — sin `composes`, que solo funciona
-   con CSS Modules — para que funcionen igual en cualquier componente
-   que aún las use. */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -503,6 +497,7 @@ input, textarea, select {
 .btn-secondary {
   background: #fff;
   color: var(--navy-900);
+  border-color: var(--red-100);
   
 }
 .btn-secondary:hover {
@@ -535,7 +530,6 @@ button:disabled {
   border-color: transparent;
 }
 
-/* Clases heredadas (compatibilidad con componentes existentes) */
 .primary-button {
   display: inline-flex;
   align-items: center;
@@ -980,7 +974,7 @@ button:disabled {
 .field textarea,
 .field select,
 .inline-form input {
-  width: 80%;
+  width: 100%;
   padding: 9px 11px;
   border: 1px solid var(--border-strong);
   border-radius: 6px;
@@ -1029,6 +1023,12 @@ button:disabled {
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.inline-form input {
+  flex: 1 1 180px;
+  min-width: 0;
+  width: auto;
 }
 
 .auth-actions .btn,

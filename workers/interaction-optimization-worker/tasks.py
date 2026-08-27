@@ -25,7 +25,7 @@ def _report(endpoint: str, payload: dict):
             response.raise_for_status()
             return
         except Exception as exc:
-            print(f"[Evolution Worker] Attempt {attempt + 1}/3 - error reporting to {url}: {exc}")
+            print(f"[Interaction Optimization Worker] Attempt {attempt + 1}/3 - error reporting to {url}: {exc}")
             if attempt < 2:
                 time.sleep(2 ** attempt)
 
@@ -171,7 +171,7 @@ def _copy_pdb_into_scenario(source: Path, scenario_dir: Path) -> str:
     return target.name
 
 
-def _resolve_evolution_pdbfile(normalized: dict, scenario_dir: Path) -> str:
+def _resolve_interaction_optimization_pdbfile(normalized: dict, scenario_dir: Path) -> str:
     pdbfile_param = normalized.get("pdbfile")
     if pdbfile_param:
         explicit_path = Path(str(pdbfile_param))
@@ -227,14 +227,14 @@ def _normalize_runtime_params(stage_name: str, params: dict, workdir: Path) -> d
     normalized["output_dir"] = requested_output_dir
     normalized["runtime_output_dir"] = str(runtime_output_dir)
 
-    if stage_name == "evolution":
+    if stage_name == "interaction_optimization":
         scenario_reference = (
             normalized.get("scenario_path")
             or normalized.get("input_scenario_path")
             or normalized.get("scenario_dir")
         )
         if not scenario_reference:
-            raise ValueError("Evolution requires 'scenario_path' or equivalent input directory")
+            raise ValueError("Interaction optimization requires 'scenario_path' or equivalent input directory")
 
         materialized_scenario = _materialize_scenario(str(scenario_reference), workdir)
         scenario_name = normalized.get("scenario_name") or materialized_scenario.name
@@ -244,7 +244,7 @@ def _normalize_runtime_params(stage_name: str, params: dict, workdir: Path) -> d
         normalized["scenario_root"] = str(materialized_scenario.parent)
         normalized["algorithm"] = str(normalized.get("algorithm") or "sea")
         
-        normalized["pdbfile"] = _resolve_evolution_pdbfile(normalized, materialized_scenario)
+        normalized["pdbfile"] = _resolve_interaction_optimization_pdbfile(normalized, materialized_scenario)
         
         normalized["partners"] = str(normalized.get("partners") or "")
         normalized["ligand_chain"] = str(normalized.get("ligand_chain") or "")
@@ -273,14 +273,14 @@ def _normalize_runtime_params(stage_name: str, params: dict, workdir: Path) -> d
 def _validate_inputs(runtime_params: dict):
     scenario_path = runtime_params.get("scenario_path")
     if not scenario_path:
-        raise ValueError("Could not resolve 'scenario_path' for evolution")
+        raise ValueError("Could not resolve 'scenario_path' for interaction optimization")
     if not Path(scenario_path).exists():
         raise FileNotFoundError(f"Scenario directory not found: {scenario_path}")
 
     if not runtime_params.get("partners"):
-        raise ValueError("Evolution requires 'partners'")
+        raise ValueError("Interaction optimization requires 'partners'")
     if not runtime_params.get("ligand_chain"):
-        raise ValueError("Evolution requires 'ligand_chain'")
+        raise ValueError("Interaction optimization requires 'ligand_chain'")
 
 
 def _build_template_context(runtime_params: dict) -> dict:
@@ -398,7 +398,7 @@ def _publish_outputs(runtime_output_dir: str, published_output_dir: str):
         shutil.copy2(source, destination)
 
 
-def _execute_docker_runtime(runtime: SimpleNamespace, runtime_params: dict, workdir: Path) -> subprocess.CompletedProcess:
+def _execute_docker_runtime(runtime: SimpleNamespace, runtime_params: dict, workdir: Path, stage_execution_id: int) -> subprocess.CompletedProcess:
     if not runtime.image:
         raise ValueError("Docker runtime requires an image")
 
@@ -409,7 +409,7 @@ def _execute_docker_runtime(runtime: SimpleNamespace, runtime_params: dict, work
     command = _render_command(runtime.command_template or [], resolved_context)
     command = _append_parameter_flags(command, runtime_params["_tool_parameters"], runtime_params)
 
-    docker_command = ["docker", "run", "--rm"]
+    docker_command = ["docker", "run", "--rm", "--label", f"platform.stage_execution_id={stage_execution_id}"]
     parent_container = os.environ.get("HOSTNAME")
     if parent_container:
         docker_command.extend(["--volumes-from", parent_container])
@@ -448,7 +448,7 @@ def _execute(stage_execution_id: int, stage_name: str, tool_id: int, params: dic
     _validate_inputs(runtime_params)
 
     print("=" * 60)
-    print("[EVOLUTION] Executing declarative runtime")
+    print("[INTERACTION OPTIMIZATION] Executing declarative runtime")
     print(f"  stage_execution_id : {stage_execution_id}")
     print(f"  tool_id            : {tool.id}")
     print(f"  tool_name          : {tool.name}")
@@ -461,9 +461,9 @@ def _execute(stage_execution_id: int, stage_name: str, tool_id: int, params: dic
     print(f"  output_dir         : {runtime_params['output_dir']}")
 
     if runtime.mode != "docker":
-        raise ValueError(f"Evolution worker only supports runtime mode='docker' for now, not '{runtime.mode}'")
+        raise ValueError(f"Interaction optimization worker only supports runtime mode='docker' for now, not '{runtime.mode}'")
 
-    completed = _execute_docker_runtime(runtime, runtime_params, workdir)
+    completed = _execute_docker_runtime(runtime, runtime_params, workdir, stage_execution_id)
     _publish_outputs(runtime_params["runtime_output_dir"], runtime_params["output_dir"])
 
     outputs = _collect_outputs(runtime_params["output_dir"])
@@ -504,7 +504,7 @@ def _is_resource_exhaustion(message: str) -> bool:
     return any(marker in normalized for marker in markers)
 
 
-@celery_app.task(bind=True, name="tasks.run_stage", queue="evolution", acks_late=True)
+@celery_app.task(bind=True, name="tasks.run_stage", queue="interaction_optimization", acks_late=True)
 def run_stage(
     self,
     stage_execution_id: int,
@@ -514,7 +514,7 @@ def run_stage(
     params: dict,
     tool_contract: dict,
 ):
-    print("\n[Evolution Worker] -- Task received ------------------")
+    print("\n[Interaction Optimization Worker] -- Task received ------------------")
     print(f"  stage_execution_id : {stage_execution_id}")
     print(f"  stage_name         : {stage_name}")
     print(f"  tool_id            : {tool_id}")
@@ -536,18 +536,18 @@ def run_stage(
             {"output_files": result["output_files"], "metadata": result["metadata"]},
         )
 
-        print(f"[Evolution Worker] stage_execution_id={stage_execution_id} -> completed\n")
+        print(f"[Interaction Optimization Worker] stage_execution_id={stage_execution_id} -> completed\n")
         return {"status": "completed", "stage_execution_id": stage_execution_id}
 
     except SoftTimeLimitExceeded:
-        message = "Soft time limit exceeded in evolution"
-        print(f"[Evolution Worker] TIMEOUT: {message}")
+        message = "Soft time limit exceeded in interaction optimization"
+        print(f"[Interaction Optimization Worker] TIMEOUT: {message}")
         _report(f"/internal/stages/{stage_execution_id}/failed", {"error": message, "retry_type": "technical"})
         raise
 
     except subprocess.CalledProcessError as exc:
         message = f"Docker execution failed: returncode={exc.returncode}\nstderr: {exc.stderr}"
-        print(f"[Evolution Worker] ERROR: {message}")
+        print(f"[Interaction Optimization Worker] ERROR: {message}")
         retry_type = "logical" if _is_resource_exhaustion(message) else "logical"
         _report(
             f"/internal/stages/{stage_execution_id}/failed",
@@ -558,7 +558,7 @@ def run_stage(
     except Exception as exc:
         traceback_text = traceback.format_exc()
         message = str(exc)
-        print(f"[Evolution Worker] ERROR: {message}\n{traceback_text}")
+        print(f"[Interaction Optimization Worker] ERROR: {message}\n{traceback_text}")
         retry_type = "logical" if _is_resource_exhaustion(message) else "logical"
         _report(
             f"/internal/stages/{stage_execution_id}/failed",
